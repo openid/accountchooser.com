@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+If your organization is willing to host a copy of the JS for free, contact the Account Chooser working group at http://goo.gl/jClJN
+-->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Pragma" content="cache">
+    <meta http-equiv="Cache-control" content="public">
+    <meta http-equiv="X-FRAME-OPTIONS" content="DENY">
+    <title>Account Chooser</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ssl.gstatic.com/caja/5678/html-css-sanitizer-minified.js"></script>
+    <script type="text/javascript" src="https://www.accountchooser.com/static/48/ac-server.js"></script>
+    <script type="text/javascript">
+      accountchooser.util.checkAccountChooserDomain();
+      jQuery(function() {
+        var uiLoader = new accountchooser.loader.UrlTemplateUiLoader(
+            ['https://www.accountchooser.com/static/48/{language}/ac-ui.js'],
+            ['https://www.accountchooser.com/static/48/ac.css']);
+        accountchooser.startServerMode(uiLoader);
+      });
+    </script>
+  </head>
+  <body>
+    <style>plaintext{display:none}</style>
+    <script>
+      (function(){
+        try{
+          var win=this;
+          while("<plaintext>"){
+            if(win.parent==win)
+            break;
+            eval("win.frameElement.src").substr(0,1);
+            win=win.parent;
+          }
+          if(win.frameElement!=null)throw 'busted';
+          document.write("\x3Cxmp style\x3Ddisplay:none\x3E");
+          }catch(e){
+          try{
+            if(!open(location,'_top'))
+            alert('this content cant be framed');
+            top.location=location;
+          }catch(e){}
+        }
+      })();
+    </script>
+    <!-- do not remove the plaintext nor xmp tags -->
+    <plaintext/><xmp>.</xmp>
+    <!-- framebuster code ends here -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://www.accountchooser.com; style-src 'self' 'unsafe-inline' https://www.accountchooser.com; img-src 'self' https:; connect-src *">
+  </body>
+</html>
