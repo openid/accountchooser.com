@@ -1580,7 +1580,7 @@ accountchooser.rpc.parseRpcObject = function(jsonObject, acceptable) {
   return result;
 };
 
-accountchooser.rpc.BUILD_NUMBER_ = 20140418;
+accountchooser.rpc.BUILD_NUMBER_ = 20140430;
 
 
 
