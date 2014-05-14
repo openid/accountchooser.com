@@ -1580,7 +1580,7 @@ accountchooser.rpc.parseRpcObject = function(jsonObject, acceptable) {
   return result;
 };
 
-accountchooser.rpc.BUILD_NUMBER_ = 20140430;
+accountchooser.rpc.BUILD_NUMBER_ = 20140514;
 
 
 
@@ -3572,8 +3572,7 @@ accountchooser.rpc.process_ = function(request, origin) {
         accountchooser.rpc.handleQuery_(request, origin);
       }
     } else if (request instanceof accountchooser.rpc.StoreRequest &&
-        request.getClientConfig('silent') &&
-        accountchooser.util.isExperimentOn('ACCOUNT_BOOTSTRAP')) {
+        request.getClientConfig('silent')) {
       if (disabled) {
         accountchooser.rpc.sendDisableResponse_(request, origin);
       } else {

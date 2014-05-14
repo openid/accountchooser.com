@@ -1580,7 +1580,7 @@ accountchooser.rpc.parseRpcObject = function(jsonObject, acceptable) {
   return result;
 };
 
-accountchooser.rpc.BUILD_NUMBER_ = 20140430;
+accountchooser.rpc.BUILD_NUMBER_ = 20140514;
 
 
 
@@ -3102,15 +3102,11 @@ accountchooser.rpc.triggerSavedRpcs_ = function() {
   var origin = /** @type {string} */ (accountchooser.rpc.server_.clientDomain);
   var rpcs = accountchooser.rpcstorage.readSavedRpcObjects(origin, true);
   if (rpcs && rpcs.length) {
-    var validRpcTypes = accountchooser.rpc.VALID_RPC_TYPES_.slice(0);
-    // If account bootstrapping experiment is on, accept BootstrapRequest.
-    if (accountchooser.util.isExperimentOn('ACCOUNT_BOOTSTRAP')) {
-      validRpcTypes.push(accountchooser.rpc.BootstrapRequest);
-    }
     for (var i = 0; i < rpcs.length; i++) {
       var request =
           /** @type {accountchooser.rpc.ClientRequest} */
-          (accountchooser.rpc.parseRpcObject(rpcs[i], validRpcTypes));
+          (accountchooser.rpc.parseRpcObject(
+              rpcs[i], accountchooser.rpc.VALID_RPC_TYPES_));
       accountchooser.rpc.process_(request, origin, true);
     }
   } else {
@@ -3145,7 +3141,8 @@ accountchooser.rpc.sendServerReadyNotification_ = function() {
 accountchooser.rpc.VALID_RPC_TYPES_ = [
   accountchooser.rpc.StoreRequest,
   accountchooser.rpc.SelectRequest,
-  accountchooser.rpc.UpdateRequest
+  accountchooser.rpc.UpdateRequest,
+  accountchooser.rpc.BootstrapRequest
 ];
 
 /**
@@ -3191,13 +3188,10 @@ accountchooser.rpc.initServer = function(options) {
   if (options.popupMode) {
     // Popup mode can only be started in a popup window.
     accountchooser.param.notEmpty(window.opener, 'window.opener');
-    var validRpcTypes = accountchooser.rpc.VALID_RPC_TYPES_.slice(0);
-    // If account bootstrapping experiment is on, accept BootstrapRequest.
-    if (accountchooser.util.isExperimentOn('ACCOUNT_BOOTSTRAP')) {
-      validRpcTypes.push(accountchooser.rpc.BootstrapRequest);
-    }
     accountchooser.rpc.registerRpcHandlerWithPolicy(
-        window.opener, validRpcTypes, accountchooser.rpc.process_);
+        window.opener,
+        accountchooser.rpc.VALID_RPC_TYPES_,
+        accountchooser.rpc.process_);
     accountchooser.rpc.server_.popupMode = true;
     accountchooser.rpc.server_.clientWindow = window.opener;
     accountchooser.rpc.sendServerReadyNotification_();
