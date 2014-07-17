@@ -486,6 +486,20 @@ accountchooser.util.checkAccountsMatch = function(account1, account2) {
 };
 
 /**
+ * Checks whether two accounts loosely match each other, which means they have
+ * the same email address and their provider IDs don't conflict.
+ * @param {accountchooser.Account} account1 The first account.
+ * @param {accountchooser.Account} account2 The second account.
+ * @return {boolean} {@code true} if they loosely match.
+ */
+accountchooser.util.checkAccountsLooselyMatch = function(account1, account2) {
+  return account1.email == account2.email &&
+      (!account1.providerId ||
+       !account2.providerId ||
+       account1.providerId == account2.providerId);
+};
+
+/**
  * Checks whether two accounts are compatible. If two accounts are compatible,
  * they have the same email and providerId. Also their displayNames and
  * photoUrls don't conflict.

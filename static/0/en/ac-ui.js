@@ -16,7 +16,8 @@
 
 /**
  * @fileoverview
- * Utility functions and classes for Soy.
+ * Utility functions and classes for Soy. This file is deprecated, please use
+ * soyutils_usegoog.js.
  *
  * <p>
  * The top portion of this file contains utilities for Soy users:<ul>

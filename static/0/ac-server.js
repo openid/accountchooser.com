@@ -486,6 +486,20 @@ accountchooser.util.checkAccountsMatch = function(account1, account2) {
 };
 
 /**
+ * Checks whether two accounts loosely match each other, which means they have
+ * the same email address and their provider IDs don't conflict.
+ * @param {accountchooser.Account} account1 The first account.
+ * @param {accountchooser.Account} account2 The second account.
+ * @return {boolean} {@code true} if they loosely match.
+ */
+accountchooser.util.checkAccountsLooselyMatch = function(account1, account2) {
+  return account1.email == account2.email &&
+      (!account1.providerId ||
+       !account2.providerId ||
+       account1.providerId == account2.providerId);
+};
+
+/**
  * Checks whether two accounts are compatible. If two accounts are compatible,
  * they have the same email and providerId. Also their displayNames and
  * photoUrls don't conflict.
@@ -1580,7 +1594,7 @@ accountchooser.rpc.parseRpcObject = function(jsonObject, acceptable) {
   return result;
 };
 
-accountchooser.rpc.BUILD_NUMBER_ = 20140514;
+accountchooser.rpc.BUILD_NUMBER_ = 20140716;
 
 
 
@@ -2729,10 +2743,12 @@ accountchooser.rpc.registerMessageHandler = function(messageHandler) {
  */
 accountchooser.rpc.loadHiddenIFrame = function(url, opt_onload) {
   var iframe = document.createElement('iframe');
-  iframe.setAttribute('style', 'position: absolute; width: 1px; ' +
-      'height: 1px; left: -9999px;');
-  iframe.setAttribute('id', 'accountchooser-iframe');
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+  iframe.style.position = 'absolute';
+  iframe.style.width = '1px';
+  iframe.style.height = '1px';
+  iframe.style.left = '-9999px';
+  iframe.id = 'accountchooser-iframe';
+  iframe.sandbox = 'allow-scripts allow-same-origin';
   document.body.appendChild(iframe);
   if (opt_onload) {
     accountchooser.rpc.addEventListener(iframe, 'load', opt_onload);
@@ -2955,13 +2971,6 @@ accountchooser.rpcstorage.SAVED_IN_RPC_PREFIX_ = 'IN_RPC_';
 accountchooser.rpcstorage.SAVED_OUT_RPC_PREFIX_ = 'OUT_RPC_';
 
 /**
- * The life time of an RPC object, in milliseconds. Default to 5 minutes.
- * @const {number}
- * @private
- */
-accountchooser.rpcstorage.RPC_TIMEOUT_ = 5 * 60 * 1000;
-
-/**
  * The storage for incoming (from client to accountchooser) RPC objects
  * @type {accountchooser.DomainStorage}
  * @private
@@ -2991,22 +3000,13 @@ accountchooser.rpcstorage.readSavedRpcObjects = function(
   var domain = clientDomain.replace(/^https?:\/\//, '');
   var result = [];
   var data = /** @type {Array.<Object>|undefined} */ (storage.read(domain));
-  if (data) {
-    var now = new Date().getTime();
-    if (data.length) {
-      // Only process the latest request.
-      var rpc = data[data.length - 1];
-      if (rpc && rpc.timestamp &&
-          now - rpc.timestamp < accountchooser.rpcstorage.RPC_TIMEOUT_) {
-        result.push(rpc);
-        if (incoming) {
-          // Keeps incoming request for accountchooser page reloading.
-          storage.write(domain, result);
-        }
-      } else {
-        accountchooser.util.log(
-            'Ignore expired JSON-RPC object: [' + JSON.stringify(rpc) + ']');
-      }
+  if (data && data.length) {
+    // Only process the latest request.
+    var rpc = data[data.length - 1];
+    result.push(rpc);
+    if (incoming) {
+      // Keeps incoming request for accountchooser page reloading.
+      storage.write(domain, result);
     }
   }
   return result;
@@ -3022,8 +3022,9 @@ accountchooser.rpcstorage.readSavedRpcObjects = function(
 accountchooser.rpcstorage.saveRpcObject = function(
     clientDomain, rpcObject, incoming) {
   var domain = clientDomain.replace(/^https?:\/\//, '');
-  // Delete the out-dated request/response before saving a new one.
-  accountchooser.rpcstorage.incomingStorage_.clear(domain);
+  // Delete the out-dated response before saving a new one.
+  // Don't clean up the saved request such that when the user navigates back,
+  // accountchooser.com still can show the proper service page.
   accountchooser.rpcstorage.outgoingStorage_.clear(domain);
   // Save the new one.
   // Uses an array for future extensibility, currently at most 1 element.
